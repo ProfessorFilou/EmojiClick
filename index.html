@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🖱 Emoji Clicker Ultra – Final Battle 🔥😎</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(to bottom, #0f001a, #2a0050);
+      color: #e8ecf2;
+      text-align: center;
+      padding: 15px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin: 20px 0;
+      text-shadow: 0 0 15px #ff00ff;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 0, 255, 0.2);
+      backdrop-filter: blur(12px);
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 600px;
+      width: 95%;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.2);
+    }
+
+    button {
+      background: linear-gradient(45deg, #2a0050, #500080);
+      border: 1px solid #ff00ff88;
+      color: #ffccff;
+      padding: 14px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+      margin: 6px;
+      min-width: 140px;
+    }
+
+    button:hover {
+      transform: scale(1.08);
+    }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    #emoji {
+      font-size: 130px;
+      cursor: pointer;
+      margin: 20px;
+      animation: pulse 2s infinite, rainbow 10s infinite linear;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes rainbow {
+      0% {
+        filter: hue-rotate(0deg);
+      }
+
+      100% {
+        filter: hue-rotate(360deg);
+      }
+    }
+
+    #emoji:active {
+      transform: scale(1.3);
+    }
+
+    #progressBar {
+      background: #200040;
+      border: 1px solid #ff00ff;
+      height: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    #progressFill {
+      background: linear-gradient(90deg, #ff00ff, #00ffff, #ff00ff);
+      background-size: 200% 100%;
+      animation: shimmer 3s infinite linear;
+      height: 100%;
+      width: 0%;
+      transition: width 0.6s ease-out;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 0% 0;
+      }
+
+      100% {
+        background-position: 200% 0;
+      }
+    }
+
+    #popContainer {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 350px;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .popMessage {
+      background: linear-gradient(45deg, #ff00ff44, #00ffff44);
+      color: #fff;
+      padding: 12px 16px;
+      margin-top: 8px;
+      border-radius: 15px;
+      font-weight: bold;
+      backdrop-filter: blur(10px);
+      border: 1px solid #ff00ff66;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+      animation: floatPop 2.5s forwards;
+    }
+
+    @keyframes floatPop {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      50% {
+        transform: translateY(-20px) scale(1.05);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-80px) scale(0.8);
+      }
+    }
+
+    #particleContainer,
+    #clickParticles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .particle,
+    .clickParticle {
+      position: absolute;
+      font-size: 30px;
+      animation: explode 1.5s forwards;
+      pointer-events: none;
+    }
+
+    @keyframes explode {
+      0% {
+        opacity: 1;
+        transform: scale(0)
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(2)translate(var(--dx), var(--dy))
+      }
+    }
+
+    .clickParticle {
+      font-size: 28px;
+      animation: clickFloat 1.2s forwards;
+    }
+
+    @keyframes clickFloat {
+      0% {
+        opacity: 1;
+        transform: translateY(0)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-60px)
+      }
+    }
+
+    .leaderboard-entry {
+      padding: 12px;
+      margin: 5px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      border-left: 4px solid #ff00ff;
+    }
+
+    .leaderboard-entry.own {
+      border-left: 4px solid #ffd700;
+      background: rgba(255, 215, 0, 0.08);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+    }
+
+    .achievement {
+      padding: 12px;
+      margin: 8px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      border-left: 4px solid #888;
+      opacity: 0.6;
+    }
+
+    .achievement.unlocked {
+      opacity: 1;
+      border-left: 6px solid #ffd700;
+      background: linear-gradient(45deg, #ffd70022, #ff00ff22);
+      box-shadow: 0 0 20px #ffd700;
+    }
+
+    /* AUTH OVERLAY */
+    #authOverlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0f001a 0%, #2a0050 50%, #0f001a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    }
+
+    #authBox {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 0, 255, 0.35);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 32px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 0 60px rgba(255, 0, 255, 0.25), 0 0 120px rgba(0, 255, 255, 0.1);
+    }
+
+    #authBox h2 {
+      margin: 0 0 8px;
+      font-size: 1.6rem;
+      text-shadow: 0 0 20px #ff00ff;
+    }
+
+    #authBox p.subtitle {
+      color: #cc99ff;
+      margin: 0 0 28px;
+      font-size: 0.9rem;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ff00ff55;
+      background: transparent;
+      color: #cc99ff;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: 0.2s;
+      min-width: unset;
+    }
+
+    .auth-tab.active {
+      background: linear-gradient(45deg, #ff00ff33, #7700ff33);
+      color: #fff;
+      border-color: #ff00ff;
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+    }
+
+    .auth-field {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 0, 255, 0.3);
+      background: rgba(0, 0, 0, 0.3);
+      color: #ffccff;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .auth-field:focus {
+      border-color: #ff00ff;
+      box-shadow: 0 0 12px rgba(255, 0, 255, 0.3);
+    }
+
+    .auth-field::placeholder {
+      color: #8855aa;
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid #ff00ff88;
+      background: linear-gradient(45deg, #ff00ff33, #7700ff55);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+      min-width: unset;
+      margin: 4px 0 0;
+      letter-spacing: 0.03em;
+    }
+
+    .auth-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+    }
+
+    /* Google Button */
+    .google-btn {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: #fff;
+      color: #3c4043;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-width: unset;
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .google-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      background: #f8f8f8;
+    }
+
+    .google-logo {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    #authError {
+      color: #ff6666;
+      font-size: 0.88rem;
+      margin: 10px 0 0;
+      min-height: 20px;
+      display: none;
+    }
+
+    #authSuccess {
+      color: #66ff99;
+      font-size: 0.88rem;
+      margin: 10px 0 0;
+      min-height: 20px;
+      display: none;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0;
+      color: #7755aa;
+      font-size: 0.8rem;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 0, 255, 0.2);
+    }
+
+    .forgot-link {
+      color: #bb88ff;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: underline;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .forgot-link:hover {
+      color: #ff88ff;
+    }
+
+    /* Google Loading */
+    #googleLoadingMsg {
+      color: #bb88ff;
+      font-size: 0.88rem;
+      margin: 10px 0 0;
+      display: none;
+      text-align: center;
+    }
+
+    /* BAN OVERLAY */
+    #banOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.96);
+      color: #ff4444;
+      font-size: 3rem;
+      font-weight: bold;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 40px;
+      line-height: 1.4;
+    }
+
+    #banOverlay p {
+      max-width: 90%;
+      margin: 0;
+    }
+
+    /* Account-Karte unten */
+    .danger-btn {
+      background: linear-gradient(45deg, #330011, #660022) !important;
+      border-color: #ff004488 !important;
+      color: #ffaaaa !important;
+    }
+
+    .danger-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255, 0, 68, 0.5) !important;
+    }
+
+    /* Modal für Konto löschen */
+    #deleteModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      padding: 20px;
+    }
+
+    #deleteModalBox {
+      background: #1a0030;
+      border: 1px solid #ff004488;
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 0 40px rgba(255, 0, 68, 0.3);
+    }
+
+    #deleteModalBox h3 {
+      color: #ff4444;
+      margin: 0 0 10px;
+      font-size: 1.4rem;
+    }
+
+    #deleteModalBox p {
+      color: #cc99ff;
+      font-size: 0.9rem;
+      margin: 0 0 20px;
+    }
+
+    @media (max-width:768px) {
+      #emoji {
+        font-size: 110px;
+      }
+
+      button {
+        padding: 16px;
+        font-size: 1.1rem;
+      }
+
+      #banOverlay {
+        font-size: 2.2rem;
+        padding: 30px;
+      }
+
+      #authBox {
+        padding: 28px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="particleContainer"></div>
+  <div id="popContainer"></div>
+  <div id="clickParticles"></div>
+
+  <!-- AUTH OVERLAY -->
+  <div id="authOverlay">
+    <div id="authBox">
+      <h2>🖱 Emoji Clicker</h2>
+      <p class="subtitle">Melde dich an und dominiere das Leaderboard!</p>
+
+      <!-- Google Sign-In -->
+      <button class="google-btn" onclick="doGoogleLogin()">
+        <svg class="google-logo" viewBox="0 0 48 48">
+          <path fill="#EA4335"
+            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+          <path fill="#4285F4"
+            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+          <path fill="#FBBC05"
+            d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+          <path fill="#34A853"
+            d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          <path fill="none" d="M0 0h48v48H0z" />
+        </svg>
+        Mit Google anmelden
+      </button>
+      <div id="googleLoadingMsg">⏳ Google Anmeldung läuft... bitte warten.</div>
+
+      <div class="auth-divider">oder mit E-Mail</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')" id="tabLogin">🔑 Login</button>
+        <button class="auth-tab" onclick="switchTab('register')" id="tabRegister">✨ Registrieren</button>
+      </div>
+
+      <!-- Login -->
+      <div id="loginForm">
+        <input class="auth-field" id="loginEmail" type="email" placeholder="E-Mail" autocomplete="email">
+        <input class="auth-field" id="loginPassword" type="password" placeholder="Passwort"
+          autocomplete="current-password">
+        <button class="auth-btn" onclick="doLogin()">🚀 Einloggen</button>
+        <span class="forgot-link" onclick="doResetPassword()">Passwort vergessen?</span>
+      </div>
+
+      <!-- Register -->
+      <div id="registerForm" style="display:none">
+        <input class="auth-field" id="regName" type="text" placeholder="Spielername (max 15 Zeichen)" maxlength="15">
+        <input class="auth-field" id="regEmail" type="email" placeholder="E-Mail" autocomplete="email">
+        <input class="auth-field" id="regPassword" type="password" placeholder="Passwort (min 6 Zeichen)"
+          autocomplete="new-password">
+        <button class="auth-btn" onclick="doRegister()">🎮 Account erstellen</button>
+      </div>
+
+      <div id="authError"></div>
+      <div id="authSuccess"></div>
+    </div>
+  </div>
+
+  <!-- BAN OVERLAY -->
+  <div id="banOverlay">
+    <p>Dein Account ist gesperrt.</p>
+    <p style="font-size:1.8rem; color:#ff8888;">Rede mit dem Entwickler, um entbannt zu werden.</p>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div id="deleteModal">
+    <div id="deleteModalBox">
+      <h3>⚠️ Konto wirklich löschen?</h3>
+      <p>Diese Aktion ist <strong>unwiderruflich</strong>. Dein Score und alle Daten werden permanent gelöscht.</p>
+      <input class="auth-field" id="deletePassword" type="password" placeholder="Passwort zur Bestätigung">
+      <p id="deleteGoogleNote" style="display:none; color:#ffcc66; font-size:0.85rem; margin:-8px 0 12px;">Du bist per
+        Google eingeloggt – kein Passwort nötig.</p>
+      <button onclick="confirmDeleteAccount()"
+        style="background:linear-gradient(45deg,#660000,#990000);border-color:#ff0000;width:100%;min-width:unset;margin:0 0 10px;">🗑️
+        Ja, Konto löschen</button>
+      <button onclick="closeDeleteModal()" style="width:100%;min-width:unset;margin:0;">Abbrechen</button>
+      <div id="deleteError" style="color:#ff6666;font-size:0.85rem;margin-top:10px;display:none;"></div>
+    </div>
+  </div>
+
+  <h1>🖱 Emoji Clicker Ultra<br><small>Final Battle Edition 🏆😈</small></h1>
+
+  <div class="card">
+    <p>Klick das Emoji!</p>
+    <div id="emoji">😀</div>
+    <p>Punkte: <span id="score">0</span></p>
+    <p>Power: <span id="power">1</span></p>
+    <p>Stufe: <span id="level">1</span> (noch <span id="nextLevel">—</span>)</p>
+    <div id="progressBar">
+      <div id="progressFill"></div>
+    </div>
+    <p>Auto/s: <span id="autoCount">0</span></p>
+    <p>👤 <span id="playerName">Lade...</span></p>
+  </div>
+
+  <div class="card">
+    <p>👥 Besuche gesamt: <span id="visits">—</span></p>
+    <p>🟢 Spieler online: <span id="onlineCount">—</span></p>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Realtime Leaderboard (Top 10)</h2>
+    <div id="leaderboardList">Lade Scores...</div>
+  </div>
+
+  <div class="card">
+    <h2>⚡ Power-Upgrades</h2>
+    <div class="shop-grid">
+      <button onclick="buyUpgrade(10,1)">+1 (10)</button>
+      <button onclick="buyUpgrade(100,10)">+10 (100)</button>
+      <button onclick="buyUpgrade(1000,100)">+100 (1k)</button>
+      <button onclick="buyUpgrade(10000,1000)">+1k (10k)</button>
+      <button onclick="buyUpgrade(100000,10000)">+10k (100k)</button>
+      <button onclick="buyUpgrade(5000000,50000)">+50k (5 Mio)</button>
+      <button onclick="buyUpgrade(25000000,250000)">+250k (25 Mio)</button>
+      <button onclick="buyUpgrade(120000000,1000000)">+1 Mio (120 Mio)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>😎 Emoji-Unlocks</h2>
+    <div class="shop-grid">
+      <button onclick="unlockEmoji('😎',50)">😎 Cool</button>
+      <button onclick="unlockEmoji('🐱',200)">🐱 Cat</button>
+      <button onclick="unlockEmoji('🔥',500)">🔥 Fire</button>
+      <button onclick="unlockEmoji('🐉',2000)">🐉 Dragon</button>
+      <button onclick="unlockEmoji('🤯',5000)">🤯 Boom</button>
+      <button onclick="unlockEmoji('🦄',10000)">🦄 Unicorn</button>
+      <button onclick="unlockEmoji('👽',25000)">👽 Alien</button>
+      <button onclick="unlockEmoji('💀',50000)">💀 Boss</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>✨ Boosts</h2>
+    <div class="shop-grid">
+      <button onclick="buyAuto(1,200)">🤖 +1 Auto (200)</button>
+      <button onclick="buyAuto(5,5000)">🤖 +5 Autos (5k)</button>
+      <button onclick="buyAuto(10,25000)">🤖 +10 Autos (25k)</button>
+      <button onclick="buyAuto(100,250000)">🤖 +100 Autos (250k)</button>
+      <button onclick="buyAuto(1000,2500000)">🤖 +1000 Autos (2.5M)</button>
+      <button onclick="buyDouble()">💥 x2 10s (750)</button>
+      <button onclick="buyLucky()">🍀 x5 15s (250000)</button>
+      <button onclick="buyLuckyX6()">🍀 x6 12s (1.5 Mio)</button>
+      <button onclick="buyLuckyX8()">🍀 x8 10s (8 Mio)</button>
+      <button onclick="buyRain()">🌧 Regen (3000)</button>
+      <button onclick="buyBomb()">💣 Bombe (7500)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏅 Achievements</h2>
+    <div id="achievementsList">Lade...</div>
+  </div>
+
+  <div class="card">
+    <input id="nameInput" placeholder="Anzeigename ändern (max 15)" maxlength="15"
+      style="padding:12px;width:60%;max-width:220px;border-radius:10px;border:1px solid #ff00ff;background:#200040;color:#ffccff;">
+    <button onclick="changeName()">Name ändern</button>
+    <button onclick="resetGame()" style="background:#ff0066;">🔥 Hard Reset</button>
+  </div>
+
+  <!-- ACCOUNT KARTE (ganz unten) -->
+  <div class="card">
+    <h2>👤 Account</h2>
+    <p id="accountEmailDisplay" style="color:#bb88ff; margin-bottom:16px;"></p>
+    <button onclick="doLogout()" class="danger-btn">🚪 Ausloggen</button>
+    <button onclick="openDeleteModal()" class="danger-btn" style="margin-top:8px;">🗑️ Konto löschen</button>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // ── FIREBASE INIT ──
+    const firebaseConfig = {
+      apiKey: "AIzaSyCAMvsWjBmDcH9JSiRtabwoOfHy0Pin6Jk",
+      authDomain: "emojiclickleaderboard-c1444.firebaseapp.com",
+      databaseURL: "https://emojiclickleaderboard-c1444-default-rtdb.firebaseio.com",
+      projectId: "emojiclickleaderboard-c1444",
+      storageBucket: "emojiclickleaderboard-c1444.firebasestorage.app",
+      messagingSenderId: "961795380260",
+      appId: "1:961795380260:web:c676c94a7faf8820b534b1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    // ── GOOGLE REDIRECT RESULT (nach Redirect-Login) ──
+    auth.getRedirectResult().then(async result => {
+      if (!result || !result.user) return;
+      document.getElementById('googleLoadingMsg').style.display = 'none';
+      const user = result.user;
+      const snap = await db.ref('players/' + user.uid).once('value');
+      if (!snap.exists()) {
+        const name = (user.displayName || user.email.split('@')[0]).slice(0, 15);
+        await db.ref('players/' + user.uid).set({
+          name, email: user.email, score: 0, power: 1, level: 1, auto: 0,
+          emoji: '😀', banned: false, lastActive: Date.now()
+        });
+      }
+    }).catch(e => {
+      document.getElementById('googleLoadingMsg').style.display = 'none';
+      if (e.code && e.code !== 'auth/popup-closed-by-user') {
+        showAuthError(translateAuthError(e.code));
+      }
+    });
+
+    // ── AUTH UI ──
+    function switchTab(tab) {
+      document.getElementById('loginForm').style.display = tab === 'login' ? '' : 'none';
+      document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+      document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+      clearAuthMsg();
+    }
+    function showAuthError(msg) {
+      const el = document.getElementById('authError');
+      el.textContent = '⚠️ ' + msg; el.style.display = 'block';
+      document.getElementById('authSuccess').style.display = 'none';
+    }
+    function showAuthSuccess(msg) {
+      const el = document.getElementById('authSuccess');
+      el.textContent = '✅ ' + msg; el.style.display = 'block';
+      document.getElementById('authError').style.display = 'none';
+    }
+    function clearAuthMsg() {
+      document.getElementById('authError').style.display = 'none';
+      document.getElementById('authSuccess').style.display = 'none';
+    }
+    function translateAuthError(code) {
+      const map = {
+        'auth/invalid-email': 'Ungültige E-Mail-Adresse.',
+        'auth/user-not-found': 'Kein Account mit dieser E-Mail.',
+        'auth/wrong-password': 'Falsches Passwort.',
+        'auth/email-already-in-use': 'Diese E-Mail wird bereits verwendet.',
+        'auth/weak-password': 'Passwort muss mindestens 6 Zeichen lang sein.',
+        'auth/too-many-requests': 'Zu viele Versuche. Bitte warte kurz.',
+        'auth/invalid-credential': 'E-Mail oder Passwort falsch.',
+        'auth/network-request-failed': 'Netzwerkfehler. Bitte Verbindung prüfen.',
+        'auth/popup-closed-by-user': 'Google-Anmeldung abgebrochen.',
+        'auth/cancelled-popup-request': 'Google-Anmeldung abgebrochen.',
+        'auth/requires-recent-login': 'Bitte erneut einloggen und dann nochmal versuchen.',
+        'auth/popup-blocked': 'Popup wurde blockiert. Bitte Popup-Blocker deaktivieren oder warte kurz.',
+      };
+      return map[code] || ('Fehler: ' + code);
+    }
+
+    // ── AUTH ACTIONS ──
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      if (!email || !pass) return showAuthError('Bitte alle Felder ausfüllen.');
+      try { await auth.signInWithEmailAndPassword(email, pass); }
+      catch (e) { showAuthError(translateAuthError(e.code)); }
+    }
+
+    async function doRegister() {
+      const name = document.getElementById('regName').value.trim().slice(0, 15);
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPassword').value;
+      if (!name) return showAuthError('Bitte einen Spielernamen eingeben.');
+      if (!email) return showAuthError('Bitte eine E-Mail eingeben.');
+      if (!pass) return showAuthError('Bitte ein Passwort eingeben.');
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        await cred.user.updateProfile({ displayName: name });
+        await db.ref('players/' + cred.user.uid).set({
+          name, email, score: 0, power: 1, level: 1, auto: 0,
+          emoji: '😀', banned: false, lastActive: Date.now()
+        });
+        showAuthSuccess('Account erstellt! Du wirst eingeloggt…');
+      } catch (e) { showAuthError(translateAuthError(e.code)); }
+    }
+
+    // ── GOOGLE LOGIN: Popup mit Redirect-Fallback ──
+    async function doGoogleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const loadingEl = document.getElementById('googleLoadingMsg');
+      try {
+        // Popup versuchen
+        const result = await auth.signInWithPopup(provider);
+        const user = result.user;
+        const snap = await db.ref('players/' + user.uid).once('value');
+        if (!snap.exists()) {
+          const name = (user.displayName || user.email.split('@')[0]).slice(0, 15);
+          await db.ref('players/' + user.uid).set({
+            name, email: user.email, score: 0, power: 1, level: 1, auto: 0,
+            emoji: '😀', banned: false, lastActive: Date.now()
+          });
+        }
+      } catch (e) {
+        // Popup geblockt oder geschlossen → Redirect als Fallback
+        if (
+          e.code === 'auth/popup-blocked' ||
+          e.code === 'auth/popup-closed-by-user' ||
+          e.code === 'auth/cancelled-popup-request'
+        ) {
+          loadingEl.style.display = 'block';
+          loadingEl.textContent = '⏳ Weiterleitung zu Google... bitte warten.';
+          try {
+            await auth.signInWithRedirect(provider);
+          } catch (e2) {
+            loadingEl.style.display = 'none';
+            showAuthError(translateAuthError(e2.code));
+          }
+        } else {
+          showAuthError(translateAuthError(e.code));
+        }
+      }
+    }
+
+    async function doResetPassword() {
+      const email = document.getElementById('loginEmail').value.trim();
+      if (!email) return showAuthError('Bitte deine E-Mail oben eingeben, dann hier klicken.');
+      try {
+        await auth.sendPasswordResetEmail(email);
+        showAuthSuccess('Reset-Link wurde an ' + email + ' gesendet! Bitte auch Spam prüfen.');
+      } catch (e) { showAuthError(translateAuthError(e.code)); }
+    }
+
+    async function doLogout() {
+      if (!confirm('Wirklich ausloggen?')) return;
+      if (currentUser) db.ref('online/' + currentUser.uid).remove();
+      await auth.signOut();
+    }
+
+    // ── DELETE MODAL ──
+    function openDeleteModal() {
+      const isGoogle = currentUser && currentUser.providerData[0]?.providerId === 'google.com';
+      document.getElementById('deletePassword').style.display = isGoogle ? 'none' : '';
+      document.getElementById('deleteGoogleNote').style.display = isGoogle ? '' : 'none';
+      document.getElementById('deletePassword').value = '';
+      document.getElementById('deleteError').style.display = 'none';
+      document.getElementById('deleteModal').style.display = 'flex';
+    }
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+    }
+    async function confirmDeleteAccount() {
+      if (!currentUser) return;
+      const errEl = document.getElementById('deleteError');
+      errEl.style.display = 'none';
+      const isGoogle = currentUser.providerData[0]?.providerId === 'google.com';
+
+      try {
+        if (isGoogle) {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          await currentUser.reauthenticateWithPopup(provider);
+        } else {
+          const pass = document.getElementById('deletePassword').value;
+          if (!pass) { errEl.textContent = 'Bitte Passwort eingeben.'; errEl.style.display = 'block'; return; }
+          const cred = firebase.auth.EmailAuthProvider.credential(currentUser.email, pass);
+          await currentUser.reauthenticateWithCredential(cred);
+        }
+        await db.ref('players/' + currentUser.uid).remove();
+        await db.ref('online/' + currentUser.uid).remove();
+        await currentUser.delete();
+        closeDeleteModal();
+      } catch (e) {
+        errEl.textContent = translateAuthError(e.code);
+        errEl.style.display = 'block';
+      }
+    }
+
+    // ── GAME STATE ──
+    let currentUser = null;
+    let playerRef = null;
+    let playerName = '';
+    let score = 0, power = 1, level = 1, auto = 0;
+    let currentEmoji = '😀';
+    let doubleActive = false;
+    let doubleTimeout = null;
+    let clickCount = 0;
+    let isBanned = false;
+    let crazyMode = false;
+    let crazyInterval = null;
+    const crazyEmojis = ['😀', '😎', '🤩', '🔥', '💀', '👽', '🦄', '🐉', '🤯', '🌟', '⚡', '💥', '🎉', '🏆', '😈', '👑', '🤑', '🚀', '🌈', '🌀'];
+
+    const emojiEl = document.getElementById('emoji');
+    const scoreEl = document.getElementById('score');
+    const powerEl = document.getElementById('power');
+    const levelEl = document.getElementById('level');
+    const nextEl = document.getElementById('nextLevel');
+    const progressEl = document.getElementById('progressFill');
+    const autoEl = document.getElementById('autoCount');
+    const playerNameEl = document.getElementById('playerName');
+    const leaderboardList = document.getElementById('leaderboardList');
+    const achievementsList = document.getElementById('achievementsList');
+    const visitsEl = document.getElementById('visits');
+    const onlineCountEl = document.getElementById('onlineCount');
+    const banOverlay = document.getElementById('banOverlay');
+    const authOverlay = document.getElementById('authOverlay');
+
+    // ── AUTH STATE ──
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        authOverlay.style.display = 'none';
+        currentUser = user;
+        playerRef = db.ref('players/' + user.uid);
+        document.getElementById('accountEmailDisplay').textContent = '📧 ' + user.email;
+        playerName = user.displayName || user.email.split('@')[0].slice(0, 15);
+        document.getElementById('nameInput').value = playerName;
+        await loadOwnData();
+        setupPresence();
+      } else {
+        authOverlay.style.display = 'flex';
+        currentUser = null; playerRef = null;
+        score = 0; power = 1; level = 1; auto = 0; currentEmoji = '😀'; isBanned = false;
+        document.getElementById('accountEmailDisplay').textContent = '';
+        playerNameEl.textContent = 'Nicht eingeloggt';
+        updateUI();
+      }
+    });
+
+    // ── LOAD & BAN ──
+    async function loadOwnData() {
+      if (!playerRef) return;
+      try {
+        const snap = await playerRef.once('value');
+        const data = snap.val() || {};
+        score = Number(data.score) || 0;
+        power = Number(data.power) || 1;
+        level = Number(data.level) || 1;
+        auto = Number(data.auto) || 0;
+        currentEmoji = data.emoji || '😀';
+        playerName = data.name || playerName;
+
+        isBanned = data.banned === true || String(data.banned).toLowerCase() === 'true';
+        if (isBanned) {
+          banOverlay.style.display = 'flex';
+          emojiEl.style.pointerEvents = 'none';
+          document.querySelectorAll('button,input').forEach(el => {
+            el.disabled = true; el.style.opacity = '0.35'; el.style.pointerEvents = 'none';
+          });
+          return;
+        }
+
+        playerNameEl.textContent = playerName;
+        document.getElementById('nameInput').value = playerName;
+        const achKeys = data.achievements ? Object.keys(data.achievements) : [];
+        achKeys.forEach(id => unlockedAchievements.add(id));
+        updateUI();
+        recalculateLevel();
+        renderAchievements();
+        checkAndUnlockAchievements();
+
+        // ── FIX: Sofort in DB schreiben damit Spieler immer im Leaderboard erscheint ──
+        saveScoreToDB();
+
+      } catch (e) { console.error('Lade-Fehler:', e); }
+    }
+
+    function setupPresence() {
+      if (!currentUser || isBanned) return;
+      const uid = currentUser.uid;
+      db.ref('.info/connected').on('value', snap => {
+        if (snap.val()) {
+          db.ref('online/' + uid).onDisconnect().remove();
+          db.ref('online/' + uid).set(true);
+        }
+      });
+      db.ref('online').on('value', snap => {
+        onlineCountEl.textContent = snap.numChildren() || '—';
+      });
+    }
+
+    // ── ACHIEVEMENTS ──
+    const achievements = [
+      { id: 'firstClick', name: 'Erster Klick', desc: 'Klicke einmal', req: () => clickCount >= 1, icon: '👆' },
+      { id: 'score10k', name: 'Zehntausender', desc: '10.000 Punkte', req: () => score >= 10000, icon: '💰' },
+      { id: 'score100k', name: 'Hunderttausender', desc: '100.000 Punkte', req: () => score >= 100000, icon: '💎' },
+      { id: 'level20', name: 'Level 20', desc: 'Stufe 20 erreichen', req: () => level >= 20, icon: '📈' },
+      { id: 'auto50', name: 'Roboter-Armee', desc: '50 Autos besitzen', req: () => auto >= 50, icon: '🤖' },
+      { id: 'click1000', name: 'Klick-Wahnsinn', desc: '1.000 Klicks', req: () => clickCount >= 1000, icon: '🖱️' },
+      { id: 'million', name: 'Millionär', desc: '1 Million Punkte', req: () => score >= 1e6, icon: '🤑' },
+      { id: 'level50', name: 'Legendär', desc: 'Stufe 50 erreichen', req: () => level >= 50, icon: '👑' },
+      { id: 'billion', name: 'Milliardär', desc: '1 Milliarde Punkte', req: () => score >= 1e9, icon: '🌟' },
+      { id: 'clickMaster', name: 'Klick-Gott', desc: '25.000 Klicks', req: () => clickCount >= 25000, icon: '🖱️', hidden: true },
+      { id: 'autoKing', name: 'Auto-König', desc: '500 Autos', req: () => auto >= 500, icon: '🤖', hidden: true },
+      { id: 'click10k', name: 'Klick-Maschine', desc: '10.000 Klicks', req: () => clickCount >= 10000, icon: '⚙️' },
+      { id: 'click50k', name: 'Klick-Legende', desc: '50.000 Klicks', req: () => clickCount >= 50000, icon: '🪄' },
+      { id: 'clickMillion', name: 'Klick-Milliardär', desc: '1 Million Klicks', req: () => clickCount >= 1e6, icon: '💥' },
+      { id: 'level100', name: 'Level 100', desc: 'Stufe 100 erreichen', req: () => level >= 100, icon: '🏔️' },
+      { id: 'level200', name: 'Unsterblich', desc: 'Stufe 200 erreichen', req: () => level >= 200, icon: '♾️', hidden: true },
+      { id: 'auto100', name: 'Automatisierer', desc: '100 Autos besitzen', req: () => auto >= 100, icon: '🦾' },
+      { id: 'auto500', name: 'Fabrikbesitzer', desc: '500 Autos besitzen', req: () => auto >= 500, icon: '🏭' },
+      { id: 'auto2000', name: 'Mega-KI', desc: '2.000 Autos besitzen', req: () => auto >= 2000, icon: '🤖🔥', hidden: true },
+      { id: 'score10M', name: 'Zehnmillionär', desc: '10 Millionen Punkte', req: () => score >= 1e7, icon: '💸' },
+      { id: 'score100M', name: 'Hundertmillionär', desc: '100 Millionen Punkte', req: () => score >= 1e8, icon: '🪙' },
+      { id: 'score1B', name: 'Milliardär II', desc: '1 Milliarde Punkte', req: () => score >= 1e9, icon: '💎🌟' },
+      { id: 'score10B', name: 'Zehnmilliardär', desc: '10 Milliarden Punkte', req: () => score >= 1e10, icon: '🪐' },
+      { id: 'power1k', name: 'Powerhouse', desc: '1.000 Power erreichen', req: () => power >= 1000, icon: '⚡' },
+      { id: 'power10k', name: 'Gott der Kraft', desc: '10.000 Power erreichen', req: () => power >= 10000, icon: '🌩️', hidden: true },
+      { id: 'luckyX5', name: 'Glückspilz', desc: 'x5 Glücksboost benutzt', req: () => (window.luckyUses || 0) >= 1, icon: '🍀' },
+      { id: 'luckyX8', name: 'Glücksgott', desc: 'x8 Glücksboost benutzt', req: () => (window.luckyUses || 0) >= 1, icon: '🍀🔥', hidden: true },
+      { id: 'autoBought', name: 'Erster Kauf', desc: 'Ersten Auto-Upgrade gekauft', req: () => auto >= 1, icon: '🛒' }
+    ];
+    let unlockedAchievements = new Set();
+
+    function checkAndUnlockAchievements() {
+      if (isBanned) return;
+      achievements.forEach(ach => {
+        if (!unlockedAchievements.has(ach.id) && ach.req()) {
+          unlockedAchievements.add(ach.id);
+          if (playerRef) playerRef.child('achievements/' + ach.id).set(true);
+          showPop(`🏆 ${ach.hidden ? 'GEHEIMER ' : ''}ERFOLG: ${ach.name}!`);
+          renderAchievements();
+          if (ach.id === 'billion') activateCrazyMode();
+        }
+      });
+    }
+    function renderAchievements() {
+      achievementsList.innerHTML = '';
+      achievements.forEach(ach => {
+        const u = unlockedAchievements.has(ach.id);
+        const div = document.createElement('div');
+        div.className = `achievement${u ? ' unlocked' : ''}`;
+        div.innerHTML = `${ach.icon} <strong>${u || !ach.hidden ? ach.name : '???'}</strong><br><small>${ach.desc}</small>`;
+        achievementsList.appendChild(div);
+      });
+    }
+    function activateCrazyMode() {
+      if (crazyMode || isBanned) return;
+      crazyMode = true; showPop('🌀 CRAZY MODE AKTIVIERT!');
+      crazyInterval = setInterval(() => { emojiEl.textContent = crazyEmojis[Math.floor(Math.random() * crazyEmojis.length)]; }, 80);
+    }
+
+    // ── PARTICLES ──
+    function bgParticles() {
+      if (isBanned) return;
+      const p = document.createElement('div'); p.className = 'particle';
+      p.textContent = ['✨', '⭐', '💜', '🔥', '🦄'][Math.floor(Math.random() * 5)];
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.setProperty('--dx', (Math.random() - 0.5) * 240 + 'px');
+      p.style.setProperty('--dy', (Math.random() - 0.5) * 240 + 'px');
+      document.getElementById('particleContainer').appendChild(p);
+      setTimeout(() => p.remove(), 7000);
+    }
+    setInterval(bgParticles, 280);
+
+    function clickParticles(x, y) {
+      if (isBanned) return;
+      for (let i = 0; i < 16; i++) {
+        const cp = document.createElement('div'); cp.className = 'clickParticle';
+        cp.textContent = ['💥', '⭐', '✨', '🔥', '⚡'][Math.floor(Math.random() * 5)];
+        cp.style.left = (x + Math.random() * 50 - 25) + 'px';
+        cp.style.top = (y + Math.random() * 30 - 15) + 'px';
+        document.getElementById('clickParticles').appendChild(cp);
+        setTimeout(() => cp.remove(), 1400);
+      }
+    }
+
+    // ── CORE ──
+    emojiEl.onclick = e => {
+      if (isBanned || !currentUser) return;
+      clickCount++;
+      score += doubleActive ? power * 2 : power;
+      clickParticles(e.clientX, e.clientY);
+      updateUI(); saveScoreToDB(); recalculateLevel(); checkAndUnlockAchievements();
+    };
+
+    function updateUI() {
+      scoreEl.textContent = score.toLocaleString(); powerEl.textContent = power.toLocaleString();
+      autoEl.textContent = auto; playerNameEl.textContent = playerName || '—';
+      if (!crazyMode) emojiEl.textContent = currentEmoji;
+    }
+
+    function saveScoreToDB() {
+      if (!playerRef || isBanned) return;
+      playerRef.update({ score, power, level, auto, emoji: currentEmoji, name: playerName, lastActive: Date.now() });
+    }
+
+    function recalculateLevel() {
+      if (isBanned) return;
+      const newLevel = 1 + Math.floor(Math.sqrt(score / 800));
+      const up = newLevel > level;
+      if (up) { level = newLevel; power += level * 8; auto += Math.floor(level / 3); showPop(`🆙 Level Up! Stufe ${level}`); }
+      const ct = Math.pow(level - 1, 2) * 800, nt = Math.pow(level, 2) * 800;
+      nextEl.textContent = Math.max(0, nt - score).toLocaleString();
+      progressEl.style.width = Math.min(100, Math.max(0, nt > ct ? ((score - ct) / (nt - ct)) * 100 : 100)) + '%';
+      levelEl.textContent = level;
+      if (up) { updateUI(); saveScoreToDB(); }
+    }
+
+    // ── LEADERBOARD (Realtime) – hebt eigenen Eintrag hervor ──
+    db.ref('players').orderByChild('score').limitToLast(10).on('value', snap => {
+      const entries = [];
+      snap.forEach(child => {
+        const v = child.val();
+        if (v?.name && typeof v.score === 'number') entries.push({ ...v, uid: child.key });
+      });
+      if (!entries.length) { leaderboardList.innerHTML = '<div>Noch keine Spieler...</div>'; return; }
+      entries.sort((a, b) => b.score - a.score);
+      leaderboardList.innerHTML = '';
+      entries.forEach((e, i) => {
+        const isOwn = currentUser && e.uid === currentUser.uid;
+        const div = document.createElement('div');
+        div.className = 'leaderboard-entry' + (isOwn ? ' own' : '');
+        div.innerHTML = `${i + 1}. ${e.emoji || '😀'} <strong>${e.name}</strong>${isOwn ? ' 👈' : ''} – ${e.score.toLocaleString()} (Lv ${e.level || 1})`;
+        leaderboardList.appendChild(div);
+      });
+    });
+
+    // ── SHOP ──
+    function buyUpgrade(cost, amount) { if (isBanned || !currentUser || score < cost) return; score -= cost; power += amount; showPop(`⚡ +${amount} Power!`); updateUI(); saveScoreToDB(); recalculateLevel(); }
+    function unlockEmoji(em, cost) { if (isBanned || !currentUser || score < cost) return; score -= cost; currentEmoji = em; showPop(`😎 ${em} freigeschaltet!`); updateUI(); saveScoreToDB(); }
+    function buyAuto(amount, cost) { if (isBanned || !currentUser || score < cost) return; score -= cost; auto += amount; showPop(`🤖 +${amount} Auto/s!`); updateUI(); saveScoreToDB(); checkAndUnlockAchievements(); }
+    function buyDouble() { if (isBanned || !currentUser || score < 750 || doubleActive) return; score -= 750; doubleActive = true; showPop('💥 x2 Power für 10 Sekunden!'); clearTimeout(doubleTimeout); doubleTimeout = setTimeout(() => { doubleActive = false; showPop('x2 Boost abgelaufen'); }, 10000); updateUI(); saveScoreToDB(); }
+    function buyLucky() { if (isBanned || !currentUser || score < 250000) return; score -= 250000; window.luckyUses = (window.luckyUses || 0) + 1; showPop('🍀 x5 Glück für 15s!'); updateUI(); saveScoreToDB(); checkAndUnlockAchievements(); }
+    function buyLuckyX6() { if (isBanned || !currentUser || score < 1500000) return; score -= 1500000; window.luckyUses = (window.luckyUses || 0) + 1; showPop('🍀 x6 Glück für 12s!'); updateUI(); saveScoreToDB(); checkAndUnlockAchievements(); }
+    function buyLuckyX8() { if (isBanned || !currentUser || score < 8000000) return; score -= 8000000; window.luckyUses = (window.luckyUses || 0) + 1; showPop('🍀 x8 Glück für 10s!'); updateUI(); saveScoreToDB(); checkAndUnlockAchievements(); }
+    function buyRain() { if (isBanned || !currentUser || score < 3000) return; score -= 3000; showPop('🌧 Emoji-Regen (bald)'); updateUI(); saveScoreToDB(); }
+    function buyBomb() { if (isBanned || !currentUser || score < 7500) return; score -= 7500; showPop('💣 Bombe (bald)'); updateUI(); saveScoreToDB(); }
+
+    // ── AUTO-CLICKER ──
+    setInterval(() => {
+      if (isBanned || !currentUser || auto <= 0) return;
+      score += doubleActive ? auto * 2 : auto;
+      updateUI(); saveScoreToDB(); recalculateLevel(); checkAndUnlockAchievements();
+    }, 1000);
+
+    // ── POPUP / NAME / RESET ──
+    function showPop(text) {
+      if (isBanned) return;
+      const pop = document.createElement('div'); pop.className = 'popMessage'; pop.textContent = text;
+      document.getElementById('popContainer').appendChild(pop);
+      setTimeout(() => pop.remove(), 2600);
+    }
+    function changeName() {
+      if (isBanned || !currentUser) return;
+      const newName = document.getElementById('nameInput').value.trim().slice(0, 15);
+      if (!newName || newName === playerName) return;
+      playerName = newName; playerNameEl.textContent = newName;
+      currentUser.updateProfile({ displayName: newName });
+      saveScoreToDB(); showPop(`Name geändert → ${newName}`);
+    }
+    function resetGame() {
+      if (isBanned) return;
+      if (!confirm('Wirklich ALLES zurücksetzen?')) return;
+      score = 0; power = 1; level = 1; auto = 0; currentEmoji = '😀';
+      clickCount = 0; doubleActive = false; crazyMode = false; window.luckyUses = 0;
+      clearInterval(crazyInterval); unlockedAchievements.clear();
+      if (playerRef) playerRef.update({ score: 0, power: 1, level: 1, auto: 0, emoji: '😀', achievements: {} });
+      updateUI(); recalculateLevel(); renderAchievements(); showPop('Spiel zurückgesetzt 🔥');
+    }
+
+    // ── VISITS ──
+    db.ref('stats/visits').transaction(c => (c || 0) + 1);
+    db.ref('stats/visits').on('value', s => { visitsEl.textContent = (s.val() || 0).toLocaleString(); });
+
+    // ── ENTER-TASTE ──
+    document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    document.getElementById('regPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+
+    recalculateLevel();
+    renderAchievements();
+  </script>
+</body>
+
+</html>
